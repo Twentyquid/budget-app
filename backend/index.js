@@ -6,6 +6,7 @@ const { seedTables } = require("./seedTables.js");
 const transactionsRouter = require("./routes/transactions.js");
 const accountsRouter = require("./routes/accounts.js");
 const dashboardRouter = require("./routes/dashboard.js");
+const categoriesRouter = require("./routes/categories.js");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -66,6 +67,7 @@ app.post("/login", async (req, res) => {
 app.use("/transactions", transactionsRouter);
 app.use("/accounts", accountsRouter);
 app.use("/dashboard", dashboardRouter);
+app.use("/categories", categoriesRouter);
 
 const startServer = async () => {
   try {

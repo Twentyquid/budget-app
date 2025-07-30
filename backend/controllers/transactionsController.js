@@ -2,13 +2,15 @@ const { pool } = require("../db.js");
 
 const getRecentTransactions = async (req, res) => {
   const userId = req.query.user_id || req.body.user_id;
+  const limit = parseInt(req.query.limit, 10) || 10;
+  const offset = parseInt(req.query.offset, 10) || 0;
   if (!userId) {
     return res.status(400).json({ error: "user_id is required" });
   }
   try {
     const result = await pool.query(
-      `SELECT * FROM transactions WHERE user_id = $1 ORDER BY transaction_date DESC, id DESC LIMIT 10`,
-      [userId]
+      `SELECT * FROM transactions WHERE user_id = $1 ORDER BY transaction_date DESC, id DESC LIMIT $2 OFFSET $3`,
+      [userId, limit, offset]
     );
     res.json(result.rows);
   } catch (err) {
