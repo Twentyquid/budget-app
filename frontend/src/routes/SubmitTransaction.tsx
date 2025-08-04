@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 
 type Category = {
   id: number
@@ -10,8 +11,8 @@ type Category = {
 
 export default function SubmitTransaction() {
   const [categories, setCategories] = useState<Category[]>([])
+  const [accounts, setAccounts] = useState<{ id: number; name: string }[]>([])
   const [form, setForm] = useState({
-    user_id: '',
     account_id: '',
     category_id: '',
     amount: '',
@@ -21,22 +22,59 @@ export default function SubmitTransaction() {
   })
   const [message, setMessage] = useState('')
   const [showToast, setShowToast] = useState(false)
+  const axiosPrivate = useAxiosPrivate()
 
   useEffect(() => {
-    // Replace with actual user_id as needed
-    fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/categories?user_id=${form.user_id || 1}`,
-    )
-      .then((res) => res.json())
-      .then(setCategories)
-  }, [form.user_id])
+    // Fetch categories
+    const fetchCategories = async () => {
+      try {
+        const response = await axiosPrivate.get('/categories')
+        setCategories(response.data)
+      } catch (error) {
+        console.error('Error fetching categories:', error)
+      }
+    }
+    fetchCategories()
+
+    // Fetch accounts when user_id changes
+    const fetchAccounts = async () => {
+      try {
+        const response = await axiosPrivate.get(`/accounts/all`)
+        setAccounts(response.data)
+      } catch (error) {
+        console.error('Error fetching accounts:', error)
+      }
+    }
+
+    fetchAccounts()
+  }, [])
+
+  // Format number to Indian style
+  const formatIndianNumber = (value: string) => {
+    const num = value.replace(/,/g, '')
+    if (!num || isNaN(Number(num))) return value
+    const [integer, decimal] = num.split('.')
+    let lastThree = integer.slice(-3)
+    let otherNumbers = integer.slice(0, -3)
+    if (otherNumbers !== '') {
+      lastThree = ',' + lastThree
+    }
+    const formatted =
+      otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') +
+      lastThree +
+      (decimal ? '.' + decimal : '')
+    return formatted
+  }
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target
-    // If category_id is changed, update type to match selected category
-    if (name === 'category_id') {
+    if (name === 'amount') {
+      // Format as user types
+      const raw = value.replace(/,/g, '')
+      setForm({ ...form, amount: formatIndianNumber(raw) })
+    } else if (name === 'category_id') {
       const selectedCat = categories.find((cat) => cat.id === Number(value))
       setForm((prev) => ({
         ...prev,
@@ -51,25 +89,23 @@ export default function SubmitTransaction() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setMessage('')
-    const res = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/transactions/submit`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+    try {
+      const response = await axiosPrivate.post(
+        '/transactions/submit',
+        JSON.stringify({
           ...form,
-          amount: parseFloat(form.amount),
+          amount: parseFloat(form.amount.replace(/,/g, '')),
         }),
-      },
-    )
-    if (res.ok) {
-      setMessage('Transaction submitted!')
-      setShowToast(true)
-      setTimeout(() => setShowToast(false), 3000) // Hide toast after 3s
-      //   setForm({ ...form, amount: "", description: "" })
-    } else {
-      const data = await res.json()
-      setMessage(data.error || 'Error submitting transaction')
+      )
+      if (response.status === 201) {
+        setMessage('Transaction submitted!')
+        setShowToast(true)
+        setTimeout(() => setShowToast(false), 3000) // Hide toast after 3s
+      }
+    } catch (error) {
+      console.error('Error submitting transaction:', error)
+      setMessage('Error submitting transaction')
+      return
     }
   }
 
@@ -77,22 +113,20 @@ export default function SubmitTransaction() {
     <div className="max-w-md mx-auto mt-8 p-4 bg-white rounded shadow">
       <h2 className="text-xl font-bold mb-4">Submit Transaction</h2>
       <form onSubmit={handleSubmit} className="space-y-3">
-        <input
-          className="border p-2 w-full"
-          name="user_id"
-          placeholder="User ID"
-          value={form.user_id}
-          onChange={handleChange}
-          required
-        />
-        <input
+        <select
           className="border p-2 w-full"
           name="account_id"
-          placeholder="Account ID"
           value={form.account_id}
           onChange={handleChange}
           required
-        />
+        >
+          <option value="">Select Account</option>
+          {accounts.map((acc) => (
+            <option key={acc.id} value={acc.id}>
+              {acc.name}
+            </option>
+          ))}
+        </select>
         <select
           className="border p-2 w-full"
           name="category_id"
@@ -110,8 +144,8 @@ export default function SubmitTransaction() {
         <input
           className="border p-2 w-full"
           name="amount"
-          type="number"
-          step="0.01"
+          type="text"
+          inputMode="decimal"
           placeholder="Amount"
           value={form.amount}
           onChange={handleChange}
@@ -152,7 +186,7 @@ export default function SubmitTransaction() {
       {/* {message && <div className="mt-3 text-center">{message}</div>} */}
       {showToast && (
         <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded shadow-lg z-50 transition-opacity">
-          Transaction submitted!
+          {message}
         </div>
       )}
     </div>

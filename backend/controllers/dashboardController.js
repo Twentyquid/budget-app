@@ -1,7 +1,7 @@
 const { pool } = require("../db.js");
 
 const getDashboardData = async (req, res) => {
-  const userId = req.query.user_id || req.body.user_id;
+  const userId = req.userId;
   // const accountId = req.query.account_id || req.body.account_id;
 
   if (!userId) {

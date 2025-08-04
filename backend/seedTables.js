@@ -25,6 +25,9 @@ const seedTables = async () => {
        VALUES 
          ('Salary', 'income', TRUE, NULL),
          ('Groceries', 'expense', TRUE, NULL),
+          ('Food', 'expense', TRUE, NULL),
+          ('Fuel', 'expense', TRUE, NULL),
+          ('Utilities', 'expense', TRUE, NULL),
          ('Freelance', 'income', FALSE, $1),
          ('Dining', 'expense', FALSE, $2)`,
       [aliceId, bobId]

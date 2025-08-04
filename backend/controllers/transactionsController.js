@@ -1,7 +1,7 @@
 const { pool } = require("../db.js");
 
 const getRecentTransactions = async (req, res) => {
-  const userId = req.query.user_id || req.body.user_id;
+  const userId = req.userId;
   const limit = parseInt(req.query.limit, 10) || 10;
   const offset = parseInt(req.query.offset, 10) || 0;
   if (!userId) {
@@ -20,7 +20,6 @@ const getRecentTransactions = async (req, res) => {
 
 const submitTransaction = async (req, res) => {
   const {
-    user_id,
     account_id,
     category_id,
     amount,
@@ -29,14 +28,7 @@ const submitTransaction = async (req, res) => {
     transaction_date,
   } = req.body;
 
-  if (
-    !user_id ||
-    !account_id ||
-    !category_id ||
-    !amount ||
-    !type ||
-    !transaction_date
-  ) {
+  if (!account_id || !category_id || !amount || !type || !transaction_date) {
     return res.status(400).json({ error: "Missing required fields" });
   }
 
@@ -45,7 +37,7 @@ const submitTransaction = async (req, res) => {
       `INSERT INTO transactions (user_id, account_id, category_id, amount, type, description, transaction_date)
        VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
       [
-        user_id,
+        req.userId,
         account_id,
         category_id,
         amount,

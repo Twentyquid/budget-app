@@ -1,28 +1,37 @@
+import { Link } from '@tanstack/react-router'
 import CategoryBar from './components/CategoryBar'
 import { GradientAreaChart } from './components/charts/GradientAreaChart'
 import Topbar from './components/Topbar'
 import TransactionTile from './components/TransactionTile'
-import { useEffect, useState, type Key } from 'react'
+import { useEffect, useState } from 'react'
+import useAxiosPrivate from './hooks/useAxiosPrivate'
 
 function App() {
   const [data, setData] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
+  const [_loading, setLoading] = useState(true)
+  const [_error, setError] = useState('')
+  const axiosPrivate = useAxiosPrivate() // ✅ Move this inside the component
 
   useEffect(() => {
     setLoading(true)
     setError('')
-    fetch('http://localhost:8000/dashboard?user_id=1')
-      .then((res) => res.json())
-      .then(setData)
-      .catch(() => setError('Failed to fetch dashboard'))
-      .finally(() => setLoading(false))
-  }, [])
+    const getDashboardData = async () => {
+      try {
+        const response = await axiosPrivate.get('/dashboard')
+        setData(response.data)
+      } catch (error) {
+        setError('Failed to fetch dashboard')
+      } finally {
+        setLoading(false)
+      }
+    }
+    getDashboardData()
+  }, [axiosPrivate])
 
-  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+  // const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
   return (
-    <div className="bg-primary text-main-text flex flex-col sm:flex-row flex-wrap gap-2 font-main px-2">
+    <div className="bg-primary text-main-text flex flex-col sm:flex-row flex-wrap gap-2 min-h-screen font-main px-2">
       <Topbar />
       <div className="flex gap-2 flex-[0_0_50%] sm:flex-row flex-wrap">
         <div className="bg-accent px-6 py-4 sm:order-1 space-y-4 flex flex-[0_0_100%] sm:basis-[calc(50%-4px)] flex-col">
@@ -37,7 +46,12 @@ function App() {
         </div>
         <div className="flex flex-[0_0_100%] gap-2 text-6xl h-28 sm:hidden">
           <div className="flex-1/2 flex bg-secondary rounded-full items-center justify-center">
-            <i className="ri-add-line"></i>
+            <Link
+              className="h-full w-full flex items-center justify-center"
+              to="/submit-transaction"
+            >
+              <i className="ri-add-line"></i>
+            </Link>
           </div>
           <div className="flex-1/2 flex bg-secondary rounded-full items-center justify-center">
             <i className="ri-qr-scan-line"></i>
@@ -75,7 +89,7 @@ function App() {
           </p>
         </div>
       </div>
-      <div className="bg-secondary px-6 py-4 flex flex-col sm:basis-[calc(50%-16px)] h-[44vh] gap-4">
+      <div className="bg-secondary px-6 py-4 flex flex-col sm:basis-[calc(50%-8px)] h-[44vh] gap-4">
         <p>WEEKLY EXPENSE</p>
         <div className="flex-1 ml-[-20px] text-xs sm:h-[40vh] min-h-0">
           <GradientAreaChart chartData={data && data.weekly_summary} />
@@ -103,7 +117,9 @@ function App() {
         <div className="flex justify-between">
           <p>RECENT TRANSACTIONS</p>
           <p className="text-lg text-primary bg-main-text rounded-full px-1">
-            <i className="ri-arrow-right-up-line"></i>
+            <Link to="/transactions">
+              <i className="ri-arrow-right-up-line"></i>
+            </Link>
           </p>
         </div>
         {data && data.recent_transactions.length > 0 ? (

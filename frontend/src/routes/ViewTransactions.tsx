@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react"
+import useAxiosPrivate from '@/hooks/useAxiosPrivate'
+import { useEffect, useState } from 'react'
 
 type Transaction = {
   id: number
@@ -14,34 +15,42 @@ type Transaction = {
 export default function ViewTransactions() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState("")
+  const [error, setError] = useState('')
   const [refresh, setRefresh] = useState(0)
+  const axiosPrivate = useAxiosPrivate()
 
   // Hardcoded user_id=1 for demo; replace as needed
-  const user_id = 1
-  const backend = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000"
 
   useEffect(() => {
     setLoading(true)
-    setError("")
-    fetch(`${backend}/transactions/recent?user_id=${user_id}&limit=100`)
-      .then((res) => res.json())
-      .then(setTransactions)
-      .catch(() => setError("Failed to fetch transactions"))
-      .finally(() => setLoading(false))
+    setError('')
+    const getTransactions = async () => {
+      try {
+        const res = await axiosPrivate.get('/transactions/recent')
+
+        setTransactions(res.data)
+      } catch (error) {
+        setError(
+          typeof error === 'object' && error !== null && 'message' in error
+            ? String((error as { message?: unknown }).message)
+            : 'An error occurred',
+        )
+      } finally {
+        setLoading(false)
+      }
+    }
+    getTransactions()
   }, [refresh])
 
   const handleDelete = async (id: number) => {
-    if (!confirm("Delete this transaction?")) return
-    const res = await fetch(`${backend}/transactions/delete`, {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id }),
+    if (!confirm('Delete this transaction?')) return
+    const res = await axiosPrivate.delete(`/transactions/delete`, {
+      data: { id },
     })
-    if (res.ok) {
+    if (res.status === 200) {
       setRefresh((r) => r + 1)
     } else {
-      alert("Failed to delete transaction")
+      alert('Failed to delete transaction')
     }
   }
 

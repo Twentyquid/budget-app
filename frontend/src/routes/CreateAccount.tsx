@@ -1,37 +1,38 @@
-import { useState } from "react"
+import { useState } from 'react'
 
 export default function CreateAccount() {
   const [form, setForm] = useState({
-    user_id: "",
-    name: "",
-    type: "",
-    balance: "",
+    name: '',
+    type: '',
+    balance: '',
   })
-  const [message, setMessage] = useState("")
+  const [message, setMessage] = useState('')
 
-  const backend = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000"
+  const backend = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000'
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setMessage("")
+    setMessage('')
     const res = await fetch(`${backend}/accounts/add`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         ...form,
         balance: form.balance ? parseFloat(form.balance) : 0,
       }),
     })
     if (res.ok) {
-      setMessage("Account created!")
-      setForm({ user_id: "", name: "", type: "", balance: "" })
+      setMessage('Account created!')
+      setForm({ name: '', type: '', balance: '' })
     } else {
       const data = await res.json()
-      setMessage(data.error || "Error creating account")
+      setMessage(data.error || 'Error creating account')
     }
   }
 
@@ -39,14 +40,6 @@ export default function CreateAccount() {
     <div className="max-w-md mx-auto mt-8 p-4 bg-white rounded shadow">
       <h2 className="text-xl font-bold mb-4">Create New Account</h2>
       <form onSubmit={handleSubmit} className="space-y-3">
-        <input
-          className="border p-2 w-full"
-          name="user_id"
-          placeholder="User ID"
-          value={form.user_id}
-          onChange={handleChange}
-          required
-        />
         <input
           className="border p-2 w-full"
           name="name"
@@ -76,7 +69,10 @@ export default function CreateAccount() {
           value={form.balance}
           onChange={handleChange}
         />
-        <button className="bg-blue-600 text-white px-4 py-2 rounded" type="submit">
+        <button
+          className="bg-blue-600 text-white px-4 py-2 rounded"
+          type="submit"
+        >
           Create Account
         </button>
       </form>

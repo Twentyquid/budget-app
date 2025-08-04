@@ -4,11 +4,12 @@ const {
   addAccount,
   getAccountsByUser,
 } = require("../controllers/accountsController.js");
+const verifyToken = require("../middleware/verifyJWT.js");
 
 // POST /accounts/add
-router.post("/add", addAccount);
+router.route("/add").post(verifyToken, addAccount);
 
 // GET /accounts/all?user_id=...
-router.get("/all", getAccountsByUser);
+router.route("/all").get(verifyToken, getAccountsByUser);
 
 module.exports = router;

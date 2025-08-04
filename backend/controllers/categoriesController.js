@@ -1,7 +1,7 @@
 const { pool } = require("../db.js");
 
 const getCategories = async (req, res) => {
-  const userId = req.query.user_id || req.body.user_id;
+  const userId = req.userId;
   if (!userId) {
     return res.status(400).json({ error: "user_id is required" });
   }

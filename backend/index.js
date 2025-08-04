@@ -1,4 +1,5 @@
 const express = require("express");
+const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const { pool } = require("./db.js");
 const { initializeTables } = require("./initializeTables.js");
@@ -12,57 +13,21 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:3000", // ✅ EXACT frontend origin
+    credentials: true, // ✅ Allow cookies, etc.
+  })
+);
 app.use(express.json());
+app.use(cookieParser());
 
 // Example route
 app.get("/", (req, res) => {
   res.send("Express + CORS + PostgreSQL boilerplate");
 });
 
-// Signup endpoint
-app.post("/signup", async (req, res) => {
-  const { username, password } = req.body;
-  if (!username || !password) {
-    return res.status(400).json({ error: "Username and password required" });
-  }
-  try {
-    const userExists = await pool.query(
-      "SELECT * FROM users WHERE username = $1",
-      [username]
-    );
-    if (userExists.rows.length > 0) {
-      return res.status(409).json({ error: "Username already exists" });
-    }
-    await pool.query("INSERT INTO users (username, password) VALUES ($1, $2)", [
-      username,
-      password,
-    ]);
-    res.status(201).json({ message: "User created" });
-  } catch (err) {
-    res.status(500).json({ error: "Server error" });
-  }
-});
-
-// Login endpoint
-app.post("/login", async (req, res) => {
-  const { username, password } = req.body;
-  if (!username || !password) {
-    return res.status(400).json({ error: "Username and password required" });
-  }
-  try {
-    const user = await pool.query(
-      "SELECT * FROM users WHERE username = $1 AND password = $2",
-      [username, password]
-    );
-    if (user.rows.length === 0) {
-      return res.status(401).json({ error: "Invalid credentials" });
-    }
-    res.json({ message: "Login successful" });
-  } catch (err) {
-    res.status(500).json({ error: "Server error" });
-  }
-});
+app.use("/auth", require("./routes/auth.js")); // Auth routes for signup and login
 
 app.use("/transactions", transactionsRouter);
 app.use("/accounts", accountsRouter);

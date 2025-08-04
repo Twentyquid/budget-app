@@ -7,7 +7,6 @@ import {
   createRoute,
   createRouter,
 } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 
 import './styles.css'
 import reportWebVitals from './reportWebVitals.ts'
@@ -16,24 +15,38 @@ import App from './App.tsx'
 import SubmitTransaction from './routes/SubmitTransaction.tsx'
 import ViewTransactions from './routes/ViewTransactions.tsx'
 import CreateAccount from './routes/CreateAccount.tsx'
+import Auth from './routes/Auth.tsx'
+import PrivateRouteLayout from './components/PrivateRouteLayout.tsx'
+import PersistLogin from './components/PersistLogin.tsx'
 
 const rootRoute = createRootRoute({
   component: () => (
     <>
       <Outlet />
-      <TanStackRouterDevtools />
     </>
   ),
 })
 
 const indexRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => privateRoute,
   path: '/',
   component: App,
 })
 
-const submitTransactionRoute = createRoute({
+const persistRoute = createRoute({
   getParentRoute: () => rootRoute,
+  component: PersistLogin,
+  id: 'persist-login',
+})
+
+const privateRoute = createRoute({
+  getParentRoute: () => persistRoute,
+  id: 'private-route',
+  component: PrivateRouteLayout,
+})
+
+const submitTransactionRoute = createRoute({
+  getParentRoute: () => privateRoute,
   path: '/submit-transaction',
   component: SubmitTransaction,
 })
@@ -50,11 +63,20 @@ const createAccountRoute = createRoute({
   component: CreateAccount,
 })
 
+const authRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/auth',
+  component: Auth,
+})
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   submitTransactionRoute,
+  privateRoute,
   viewTransactionsRoute,
+  persistRoute,
   createAccountRoute,
+  authRoute,
 ])
 
 const router = createRouter({
