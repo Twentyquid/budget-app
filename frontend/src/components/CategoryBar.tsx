@@ -1,9 +1,10 @@
 type CategoryBarProps = {
   percent: string
   total: number
+  name: string
 }
 
-function CategoryBar({ percent, total }: CategoryBarProps) {
+function CategoryBar({ percent, total, name }: CategoryBarProps) {
   return (
     <div className="flex flex-col gap-2">
       <div className="bg-secondary-light h-10 flex">
@@ -12,7 +13,7 @@ function CategoryBar({ percent, total }: CategoryBarProps) {
         </div>
       </div>
       <div className="flex justify-between text-sm">
-        <p>GROCERIES</p>
+        <p>{name.toUpperCase()}</p>
         <p className="text-primary-light">{total}</p>
       </div>
     </div>

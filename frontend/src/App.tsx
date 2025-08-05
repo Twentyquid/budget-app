@@ -104,6 +104,7 @@ function App() {
               <CategoryBar
                 key={category.name}
                 total={category.total_spent}
+                name={category.name}
                 percent={
                   Math.round(
                     (category.total_spent / data.month_expense) * 100,

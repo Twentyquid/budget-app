@@ -4,10 +4,7 @@ const cors = require("cors");
 const { pool } = require("./db.js");
 const { initializeTables } = require("./initializeTables.js");
 const { seedTables } = require("./seedTables.js");
-const transactionsRouter = require("./routes/transactions.js");
-const accountsRouter = require("./routes/accounts.js");
-const dashboardRouter = require("./routes/dashboard.js");
-const categoriesRouter = require("./routes/categories.js");
+const apiRoutes = require("./routes/apiRoutes.js");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -27,12 +24,8 @@ app.get("/", (req, res) => {
   res.send("Express + CORS + PostgreSQL boilerplate");
 });
 
-app.use("/auth", require("./routes/auth.js")); // Auth routes for signup and login
-
-app.use("/transactions", transactionsRouter);
-app.use("/accounts", accountsRouter);
-app.use("/dashboard", dashboardRouter);
-app.use("/categories", categoriesRouter);
+// API routes
+app.use("/api", apiRoutes);
 
 const startServer = async () => {
   try {
