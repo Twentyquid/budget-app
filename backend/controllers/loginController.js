@@ -8,7 +8,7 @@ const handleLogin = async (req, res) => {
   }
   try {
     const user = await pool.query(
-      "SELECT * FROM users WHERE name = $1 AND password_hash = $2",
+      "SELECT id, name FROM users WHERE name = $1 AND password_hash = $2",
       [username, password]
     );
     if (user.rows.length === 0) {

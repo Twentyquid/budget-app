@@ -2,17 +2,14 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     container_name: backend
     ports:
       - "8000:8000"
     expose:
       - "8000"
-    volumes:
-      - ./backend:/usr/src/app
     environment:
       - PORT=8000
-      - CHOKIDAR_USEPOLLING=true
       - DATABASE_URL=db://postgres:postgres@db:5432/expense_tracker
       - REFRESH_TOKEN_SECRET=1234#jfkdjfd
       - ACCESS_TOKEN_SECRET=abcd#efgh

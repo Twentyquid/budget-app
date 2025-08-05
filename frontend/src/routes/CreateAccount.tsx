@@ -1,3 +1,4 @@
+import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import { useState } from 'react'
 
 export default function CreateAccount() {
@@ -7,6 +8,8 @@ export default function CreateAccount() {
     balance: '',
   })
   const [message, setMessage] = useState('')
+  const [showToast, setShowToast] = useState(false)
+  const axiosPrivate = useAxiosPrivate()
 
   const backend = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000'
 
@@ -19,20 +22,17 @@ export default function CreateAccount() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setMessage('')
-    const res = await fetch(`${backend}/accounts/add`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    try {
+      const _res = await axiosPrivate.post('/accounts/add', {
         ...form,
         balance: form.balance ? parseFloat(form.balance) : 0,
-      }),
-    })
-    if (res.ok) {
+      })
       setMessage('Account created!')
       setForm({ name: '', type: '', balance: '' })
-    } else {
-      const data = await res.json()
-      setMessage(data.error || 'Error creating account')
+      setShowToast(true)
+      setTimeout(() => setShowToast(false), 3000)
+    } catch (error) {
+      setMessage('Error creating account')
     }
   }
 
@@ -77,6 +77,11 @@ export default function CreateAccount() {
         </button>
       </form>
       {message && <div className="mt-3 text-center">{message}</div>}
+      {showToast && (
+        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded shadow-lg z-50 transition-opacity">
+          Account created!
+        </div>
+      )}
     </div>
   )
 }

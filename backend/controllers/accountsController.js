@@ -1,6 +1,7 @@
 const { pool } = require("../db.js");
 
 const addAccount = async (req, res) => {
+  console.log("User ID:", req.userId);
   const { name, type, balance } = req.body;
   if (!name || !type) {
     return res.status(400).json({ error: "Missing required fields" });
@@ -13,7 +14,7 @@ const addAccount = async (req, res) => {
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error: "Server error" + err.message });
   }
 };
 

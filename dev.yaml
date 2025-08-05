@@ -37,14 +37,12 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev
-      args:
-        - VITE_BACKEND_URL=http://localhost:8000
     container_name: frontend
     environment:
-      - VITE_BACKEND_URL=http://localhost:8000
+      - VITE_BACKEND_URL=http://localhost:8000/api
       - CHOKIDAR_USEPOLLING=true
     volumes:
-      - ./frontend:/usr/src/app
+      - ./frontend:/app
       - /app/node_modules
     ports:
       - "3000:3000"

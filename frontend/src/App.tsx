@@ -37,7 +37,7 @@ function App() {
         <div className="bg-accent px-6 py-4 sm:order-1 space-y-4 flex flex-[0_0_100%] sm:basis-[calc(50%-4px)] flex-col">
           <p className="text-xl">NET BALANCE</p>
           <p className="text-4xl">
-            {data &&
+            {data?.current_balance &&
               new Intl.NumberFormat('en-IN', {
                 style: 'decimal',
                 maximumFractionDigits: 2,
@@ -61,7 +61,7 @@ function App() {
         <div className="basis-[calc(50%-4px)] sm:order-3 px-6 py-4 space-y-4 bg-secondary">
           <p>RUNWAY</p>
           <p className="text-2xl">
-            {data &&
+            {data?.current_balance &&
               Math.floor(
                 data.current_balance.current_balance / data.avg_spending,
               )}
