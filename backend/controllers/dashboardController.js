@@ -23,7 +23,7 @@ group by user_id`,
 
     // Average daily spending (last 30 days)
     const avgSpendingResult = await pool.query(
-      `SELECT ROUND(COALESCE(SUM(daily_total),0) / 30.0,2) AS avg_spending FROM (
+      `SELECT ROUND(COALESCE(SUM(daily_total),0) / COUNT(*),2) AS avg_spending FROM (
          SELECT SUM(amount) AS daily_total
          FROM transactions
          WHERE user_id = $1 AND type = 'expense' AND transaction_date >= CURRENT_DATE - INTERVAL '30 days'

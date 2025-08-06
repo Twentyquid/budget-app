@@ -11,8 +11,6 @@ export default function CreateAccount() {
   const [showToast, setShowToast] = useState(false)
   const axiosPrivate = useAxiosPrivate()
 
-  const backend = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000'
-
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
@@ -23,7 +21,7 @@ export default function CreateAccount() {
     e.preventDefault()
     setMessage('')
     try {
-      const _res = await axiosPrivate.post('/accounts/add', {
+      await axiosPrivate.post('/accounts/add', {
         ...form,
         balance: form.balance ? parseFloat(form.balance) : 0,
       })

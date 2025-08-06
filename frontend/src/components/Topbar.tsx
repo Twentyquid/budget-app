@@ -1,8 +1,22 @@
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
+import { userStore } from '@/store/userStore'
+import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 
 function Topbar() {
   const [open, setOpen] = useState(false)
+  const axiosPrivate = useAxiosPrivate()
+
+  const handleLogout = async () => {
+    userStore.setState({ accessToken: '' })
+    try {
+      await axiosPrivate.get('/auth/logout')
+      userStore.setState({ accessToken: '' })
+    } catch (error) {
+      console.error('Logout failed:', error)
+    }
+    console.log('User logged out')
+  }
   return (
     <div className="h-16 w-[calc(100%-8px)] flex justify-between items-center">
       <div>
@@ -30,6 +44,12 @@ function Topbar() {
               >
                 Add Transaction
               </Link>
+              <div
+                onClick={handleLogout}
+                className="block w-full text-left px-4 py-2 hover:bg-accent cursor-pointer"
+              >
+                <p>Logout</p>
+              </div>
             </div>
           )}
         </div>

@@ -5,13 +5,14 @@ services:
       dockerfile: Dockerfile.dev
     container_name: backend
     ports:
-      - "8000:8000"
+      - "${BACKEND_PORT}:8000"
     volumes:
       - ./backend:/usr/src/app
     environment:
       - PORT=8000
       - CHOKIDAR_USEPOLLING=true
       - DATABASE_URL=db://postgres:postgres@db:5432/expense_tracker
+      - CORS_ORIGIN=${CORS_ORIGIN}
       - REFRESH_TOKEN_SECRET=1234#jfkdjfd
       - ACCESS_TOKEN_SECRET=abcd#efgh
     depends_on:
@@ -39,13 +40,13 @@ services:
       dockerfile: Dockerfile.dev
     container_name: frontend
     environment:
-      - VITE_BACKEND_URL=http://localhost:8000/api
+      - VITE_BACKEND_URL=${API_ENDPOINT}/api
       - CHOKIDAR_USEPOLLING=true
     volumes:
       - ./frontend:/app
       - /app/node_modules
     ports:
-      - "3000:3000"
+      - "${FRONTEND_PORT}:3000"
 
 volumes:
   db_data:
