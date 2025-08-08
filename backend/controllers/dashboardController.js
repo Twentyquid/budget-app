@@ -56,10 +56,10 @@ group by user_id`,
     // total expenses in the last 30 days
     const monthExpenseResult = await pool.query(
       `SELECT COALESCE(SUM(amount), 0) AS month_expense
-       FROM transactions
+       FROM transactions 
        WHERE user_id = $1
          AND type = 'expense'
-         AND t.transaction_date >= CURRENT_DATE - INTERVAL '30 days'`,
+         AND transaction_date >= CURRENT_DATE - INTERVAL '30 days'`,
       [userId]
     );
     const month_expense = monthExpenseResult.rows[0].month_expense;

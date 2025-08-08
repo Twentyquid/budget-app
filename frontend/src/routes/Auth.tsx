@@ -11,6 +11,7 @@ export default function Auth() {
     password: '',
   })
   const [message, setMessage] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -78,15 +79,25 @@ export default function Auth() {
                 required
               />
             )}
-            <input
-              className="border p-2 w-full"
-              name="password"
-              type="password"
-              placeholder="Password"
-              value={form.password}
-              onChange={handleChange}
-              required
-            />
+            <div className="relative">
+              <input
+                className="border p-2 w-full pr-10"
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Password"
+                value={form.password}
+                onChange={handleChange}
+                required
+              />
+              <button
+                type="button"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-blue-600"
+                onClick={() => setShowPassword((v) => !v)}
+                tabIndex={-1}
+              >
+                {showPassword ? 'Hide' : 'Show'}
+              </button>
+            </div>
             <button
               className="bg-blue-600 text-white px-4 py-2 rounded w-full"
               type="submit"

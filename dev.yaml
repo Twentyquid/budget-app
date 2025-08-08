@@ -40,7 +40,7 @@ services:
       dockerfile: Dockerfile.dev
     container_name: frontend
     environment:
-      - VITE_BACKEND_URL=${API_ENDPOINT}/api
+      - VITE_BACKEND_URL=${API_ENDPOINT}
       - CHOKIDAR_USEPOLLING=true
     volumes:
       - ./frontend:/app
