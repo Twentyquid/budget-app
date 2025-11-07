@@ -19,4 +19,22 @@ const getCategories = async (req, res) => {
   }
 };
 
-module.exports = { getCategories };
+const createCategory = async (req, res) => {
+  const userId = req.userId;
+  const { name, type } = req.body;
+  if (!userId || !name || !type) {
+    return res.status(400).json({ error: "insufficient data" });
+  }
+  try {
+    const result = await pool.query(
+      `INSERT INTO categories(name, type, user_id)
+      VALUES($1, $2, $3) RETURNING *`,
+      [name, type, userId]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    res.status(500).json({ error: "Server error" + err.message });
+  }
+};
+
+module.exports = { getCategories, createCategory };
