@@ -44,6 +44,12 @@ function Topbar() {
               >
                 Add Transaction
               </Link>
+              <Link
+                to={'/create-category'}
+                className="block w-full text-left px-4 py-2 hover:bg-accent"
+              >
+                Add Category
+              </Link>
               <div
                 onClick={handleLogout}
                 className="block w-full text-left px-4 py-2 hover:bg-accent cursor-pointer"

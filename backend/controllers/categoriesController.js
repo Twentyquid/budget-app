@@ -33,7 +33,7 @@ const createCategory = async (req, res) => {
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {
-    res.status(500).json({ error: "Server error" + err.message });
+    res.status(500).json({ error: "Server error" + error.message });
   }
 };
 

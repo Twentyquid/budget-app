@@ -18,6 +18,7 @@ import CreateAccount from './routes/CreateAccount.tsx'
 import Auth from './routes/Auth.tsx'
 import PrivateRouteLayout from './components/PrivateRouteLayout.tsx'
 import PersistLogin from './components/PersistLogin.tsx'
+import CreateCategory from './routes/CreateCategory.tsx'
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -58,9 +59,14 @@ const viewTransactionsRoute = createRoute({
 })
 
 const createAccountRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => privateRoute,
   path: '/create-account',
   component: CreateAccount,
+})
+const createCategorytRoute = createRoute({
+  getParentRoute: () => privateRoute,
+  path: '/create-category',
+  component: CreateCategory,
 })
 
 const authRoute = createRoute({
@@ -76,6 +82,7 @@ const routeTree = rootRoute.addChildren([
   viewTransactionsRoute,
   persistRoute,
   createAccountRoute,
+  createCategorytRoute,
   authRoute,
 ])
 
