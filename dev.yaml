@@ -33,7 +33,7 @@ services:
       timeout: 5s
       retries: 5
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/
   frontend:
     build:
       context: ./frontend
@@ -46,7 +46,7 @@ services:
       - ./frontend:/app
       - /app/node_modules
     ports:
-      - "${FRONTEND_PORT}:3000"
+      - "5000:3000"
 
 volumes:
   db_data:

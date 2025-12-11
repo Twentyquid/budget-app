@@ -1,4 +1,6 @@
 const { pool } = require("../db.js");
+// import Papa from "papaparse";
+const Papa = require("papaparse");
 
 const getRecentTransactions = async (req, res) => {
   const userId = req.userId;
@@ -13,6 +15,26 @@ const getRecentTransactions = async (req, res) => {
       [userId, limit, offset]
     );
     res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+const downloadAllTransactions = async (req, res) => {
+  const userId = req.userId;
+  if (!userId) {
+    return res.status(400).json({ error: "user_id is required" });
+  }
+  try {
+    const result = await pool.query(
+      `SELECT account_id, category_id, amount, type, description, transaction_date FROM transactions WHERE user_id = $1 ORDER BY transaction_date DESC`,
+      [userId]
+    );
+    const csvdata = result.rows;
+    const csvContent = Papa.unparse(csvdata, { header: true });
+    res.header("Content-Type", "text/csv");
+    res.attachment("transactions.csv");
+    return res.send(csvContent);
   } catch (err) {
     res.status(500).json({ error: "Server error" });
   }
@@ -128,4 +150,5 @@ module.exports = {
   submitTransaction,
   updateTransaction,
   deleteTransaction,
+  downloadAllTransactions,
 };
