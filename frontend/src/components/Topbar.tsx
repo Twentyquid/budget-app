@@ -66,7 +66,12 @@ function Topbar() {
               >
                 Add Category
               </Link>
-              <div onClick={downloadAllTransactions}>export data</div>
+              <div
+                className="block w-full text-left px-4 py-2 hover:bg-accent cursor-pointer"
+                onClick={downloadAllTransactions}
+              >
+                export data
+              </div>
               <div
                 onClick={handleLogout}
                 className="block w-full text-left px-4 py-2 hover:bg-accent cursor-pointer"
