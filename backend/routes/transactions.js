@@ -5,6 +5,7 @@ const {
   submitTransaction,
   updateTransaction,
   deleteTransaction,
+  downloadAllTransactions,
 } = require("../controllers/transactionsController.js");
 const verifyToken = require("../middleware/verifyJWT.js");
 
@@ -19,5 +20,8 @@ router.put("/update", verifyToken, updateTransaction);
 
 // DELETE /transactions/delete
 router.delete("/delete", verifyToken, deleteTransaction);
+
+// download transactions /transactions/download
+router.get("/download", verifyToken, downloadAllTransactions);
 
 module.exports = router;

@@ -11,8 +11,8 @@ services:
     environment:
       - PORT=8000
       - DATABASE_URL=db://postgres:postgres@db:5432/expense_tracker
-      - REFRESH_TOKEN_SECRET=1234#jfkdjfd
-      - ACCESS_TOKEN_SECRET=abcd#efgh
+      - REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET}
+      - ACCESS_TOKEN_SECRET=${ACCESS_TOKEN_SECRET}
       - CORS_ORIGIN=${CORS_ORIGIN}
     depends_on:
       db:
@@ -40,7 +40,7 @@ services:
       timeout: 5s
       retries: 5
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql
     networks:
       - app_network
   frontend:

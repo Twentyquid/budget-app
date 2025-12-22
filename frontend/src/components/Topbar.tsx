@@ -7,6 +7,22 @@ function Topbar() {
   const [open, setOpen] = useState(false)
   const axiosPrivate = useAxiosPrivate()
 
+  const downloadAllTransactions = async () => {
+    try {
+      const response = await axiosPrivate.get('/transactions/download', {
+        responseType: 'blob',
+      })
+      const url = window.URL.createObjectURL(response.data)
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', 'transactions.csv')
+      document.body.appendChild(link)
+      link.click()
+    } catch (error) {
+      console.log('error downloading: ' + error)
+    }
+  }
+
   const handleLogout = async () => {
     userStore.setState({ accessToken: '' })
     try {
@@ -50,6 +66,12 @@ function Topbar() {
               >
                 Add Category
               </Link>
+              <div
+                className="block w-full text-left px-4 py-2 hover:bg-accent cursor-pointer"
+                onClick={downloadAllTransactions}
+              >
+                export data
+              </div>
               <div
                 onClick={handleLogout}
                 className="block w-full text-left px-4 py-2 hover:bg-accent cursor-pointer"
