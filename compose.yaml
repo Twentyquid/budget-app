@@ -4,6 +4,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: backend
+    restart: unless-stopped
     ports:
       - "${BACKEND_PORT}:8000"
     expose:
@@ -28,6 +29,7 @@ services:
   db:
     image: postgres:latest
     container_name: db
+    restart: unless-stopped
     ports:
       - "5432:5432"
     environment:
@@ -50,6 +52,7 @@ services:
       args:
         - VITE_BACKEND_URL=${API_ENDPOINT}
     container_name: frontend
+    restart: unless-stopped
     ports:
       - "${FRONTEND_PORT}:80"
     networks:
